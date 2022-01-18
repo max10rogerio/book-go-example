@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - DB_NAME=books
+    ports:
+      - "15432:5432"
+    networks:
+      - postgres-network
+    volumes:
+      - postgres:/data/postgres
+      - ./.docker/postgres:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-q",
+          "-d",
+          "postgres",
+          "-U",
+          "postgres"
+        ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    restart: always
+
+volumes:
+  postgres:
+
+    null
+networks:
+  postgres-network:
+    driver: bridge
